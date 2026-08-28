@@ -1,28 +1,33 @@
 @import "tailwindcss";
 
-/* ONEWITHGOD — bathroom and sanitary ware.
+/* ONEWITHGOD — bathroom and sanitary ware, Port Harcourt.
  *
  * Persuade surface: the visitor decides and acts, so the design is the
  * product. Every road leads to WhatsApp.
  *
- * The world is picked from the use scene rather than from category habit.
- * Buyers open this on a phone, often outdoors in daylight, comparing a
- * fitting against three other sellers. So: a bright porcelain gallery, not a
- * dark showroom. White ceramic photographed on white needs a ground that is
- * warm rather than pure #fff, or the product edges dissolve into the page.
+ * The world is a dark showroom, and that is a decision about the product
+ * rather than a taste preference. This range is glazed white ceramic and
+ * polished chrome. On a pale ground white-on-white has almost no separation —
+ * the edges dissolve and the glaze has nothing to reflect. Against a warm
+ * near-black the ceramic is the brightest thing on the page, the specular
+ * highlight along every fillet becomes the subject, and the chrome finally
+ * has something to mirror. Showrooms in this trade light exactly this way.
+ *
+ * Gold, not blue, for the accent: the shopfront banner and a good share of
+ * the stock are gold-finished, and the name is ONEWITHGOD.
  */
 
 @theme {
-  --color-porcelain: oklch(0.98 0.004 85);
-  --color-porcelain-deep: oklch(0.955 0.006 85);
-  --color-ink: oklch(0.22 0.012 250);
-  --color-ink-soft: oklch(0.48 0.012 250);
-  --color-water: oklch(0.55 0.11 220);
-  --color-water-deep: oklch(0.42 0.10 225);
-  --color-brass: oklch(0.72 0.10 78);
-  --color-whatsapp: oklch(0.68 0.17 145);
-  --color-whatsapp-deep: oklch(0.58 0.16 147);
-  --color-hairline: oklch(0.88 0.006 250);
+  --color-void: oklch(0.145 0.008 60);
+  --color-surface: oklch(0.195 0.008 60);
+  --color-raised: oklch(0.245 0.009 60);
+  --color-chalk: oklch(0.965 0.004 85);
+  --color-chalk-soft: oklch(0.72 0.012 75);
+  --color-gold: oklch(0.82 0.13 85);
+  --color-gold-deep: oklch(0.66 0.12 82);
+  --color-whatsapp: oklch(0.72 0.18 145);
+  --color-whatsapp-deep: oklch(0.62 0.17 147);
+  --color-hairline: oklch(0.30 0.008 60);
 
   --font-display: "Fraunces", ui-serif, Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -31,29 +36,32 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    background-color: var(--color-void);
   }
 
   body {
-    background-color: var(--color-porcelain);
-    color: var(--color-ink);
+    background-color: var(--color-void);
+    color: var(--color-chalk);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
 
   /* ── Browser surfaces ───────────────────────────────────────────────────
-     The parts nobody draws still carry the design: selection, the caret,
-     scrollbars, focus rings. Left alone they ship browser defaults that
-     belong to no design system. Each of these is taken from the palette. */
+     The parts nobody draws still carry the design. Left alone they ship
+     browser defaults that belong to no design system — and on a dark page a
+     default scrollbar is a bright white stripe down the edge of the screen,
+     which is the single loudest tell that a site was assembled. */
 
   ::selection {
-    background-color: color-mix(in oklch, var(--color-water) 25%, transparent);
-    color: var(--color-ink);
+    background-color: color-mix(in oklch, var(--color-gold) 30%, transparent);
+    color: var(--color-chalk);
   }
 
   :root {
-    caret-color: var(--color-water);
+    caret-color: var(--color-gold);
     scrollbar-color: var(--color-hairline) transparent;
     scrollbar-width: thin;
+    color-scheme: dark;
   }
 
   ::-webkit-scrollbar {
@@ -73,13 +81,11 @@
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background-color: var(--color-ink-soft);
+    background-color: var(--color-chalk-soft);
   }
 
-  /* :focus-visible, so a mouse click does not paint a ring that only the
-     keyboard user actually needs. */
   :focus-visible {
-    outline: 2px solid var(--color-water);
+    outline: 2px solid var(--color-gold);
     outline-offset: 3px;
     border-radius: 3px;
   }
@@ -88,16 +94,14 @@
     text-underline-offset: 0.2em;
   }
 
-  /* Prices and phone numbers line up in columns; proportional figures make
-     them ragged. */
   [data-numeric],
   .tabular {
     font-variant-numeric: tabular-nums;
   }
 
-  /* The 3D hero is the one authored moment on this page. Everything else is
+  /* The 3D showroom is the one authored moment here. Everything else is
      state feedback, and none of it is worth overriding a stated need for
-     stillness — the model stops turning too. */
+     stillness — the model stops turning and the camera stops tracking too. */
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;

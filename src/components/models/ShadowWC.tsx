@@ -71,9 +71,12 @@ function useTaperedBox(
       bevelSegments: 3,
       curveSegments: 8,
     });
-    // Extrude builds along +Z; stand it up so +Y is height.
+    // Extrude builds along +Z; standing it up puts the volume at y ∈ [0, h]
+    // already. Translating by +height here was a bug: it pushed the mesh to
+    // [h, 2h] so it floated above its own contact shadow, and it silently
+    // killed the taper below, whose t = y/height then clamped to 1 for every
+    // vertex — which is exactly why it rendered as a plain box.
     geo.rotateX(-Math.PI / 2);
-    geo.translate(0, height, 0);
 
     const pos = geo.attributes.position;
     for (let i = 0; i < pos.count; i++) {
@@ -101,7 +104,6 @@ function useRoundedSlab(w: number, d: number, h: number, r: number) {
       curveSegments: 8,
     });
     geo.rotateX(-Math.PI / 2);
-    geo.translate(0, h, 0);
     geo.computeVertexNormals();
     return geo;
   }, [w, d, h, r]);

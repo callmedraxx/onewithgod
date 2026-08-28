@@ -35,8 +35,8 @@ export function WhatsAppButton({
     "text-sm font-semibold transition-colors duration-200";
   const styles =
     variant === "solid"
-      ? "bg-whatsapp text-white hover:bg-whatsapp-deep"
-      : "border border-hairline bg-white text-ink hover:border-ink-soft";
+      ? "bg-whatsapp text-[#08210f] hover:bg-whatsapp-deep"
+      : "border border-hairline bg-surface text-chalk hover:border-chalk-soft";
 
   return (
     <a
@@ -67,8 +67,8 @@ export function FloatingWhatsApp({ message }: { message: string }) {
       rel="noopener noreferrer"
       aria-label="Chat with us on WhatsApp"
       className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2.5 rounded-full
-                 bg-whatsapp px-5 py-4 text-sm font-semibold text-white shadow-lg
-                 shadow-black/15 transition-colors duration-200 hover:bg-whatsapp-deep
+                 bg-whatsapp px-5 py-4 text-sm font-semibold text-[#08210f] shadow-lg
+                 shadow-black/50 transition-colors duration-200 hover:bg-whatsapp-deep
                  sm:bottom-8 sm:right-8"
       style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom, 0px))" }}
     >
