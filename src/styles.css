@@ -29,7 +29,7 @@
   --color-whatsapp-deep: oklch(0.62 0.17 147);
   --color-hairline: oklch(0.30 0.008 60);
 
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-display: "Anton", "Arial Narrow", ui-sans-serif, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -97,6 +97,32 @@
   [data-numeric],
   .tabular {
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Anton is uppercase-first and set tight. Left at browser defaults it
+     reads as a shouty web font; the tracking and leading below are what
+     make it behave like a display face. */
+  .display {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: -0.015em;
+    line-height: 0.86;
+    font-weight: 400;
+  }
+
+  /* Film grain over the whole page.
+     A flat black background on a phone shows banding wherever a gradient
+     crosses it — the eye reads the steps as stripes. A sparse noise layer
+     breaks the bands up, and it is also most of why a dark page looks
+     photographed rather than filled. Fixed, so it does not swim on scroll. */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: 0.16;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
   }
 
   /* The 3D showroom is the one authored moment here. Everything else is

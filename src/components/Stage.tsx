@@ -15,7 +15,7 @@
  */
 
 import { Suspense, useEffect, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ContactShadows, Environment, MeshReflectorMaterial } from "@react-three/drei";
 import type { Group } from "three";
 import * as THREE from "three";
@@ -43,6 +43,21 @@ function Rig({ children, still }: { children: React.ReactNode; still: boolean })
   const group = useRef<Group>(null);
   const scroll = useScrollProgress();
   const pointer = useRef({ x: 0, y: 0 });
+  const { viewport } = useThree();
+
+  /* On a wide screen the copy takes the left and the product takes the
+     right, so the object is offset in the SCENE rather than by cropping the
+     canvas — cropping would push it out of frame instead of moving it. On a
+     narrow screen there is no room for two columns, so it centres and the
+     copy sits beneath it. */
+  const wide = viewport.aspect > 1.05;
+  const offsetX = wide ? Math.min(viewport.width * 0.13, 1.05) : 0;
+  /* On a phone there is one column, so the product takes the upper half and
+     the copy takes the lower. Without this it sat dead centre and the body
+     text ran straight across bright white ceramic — unreadable at any
+     text-shadow. */
+  const baseY = wide ? 0 : 0.42;
+  const baseScale = wide ? 1 : 0.54;
 
   useEffect(() => {
     if (still) return;
@@ -58,10 +73,16 @@ function Rig({ children, still }: { children: React.ReactNode; still: boolean })
     if (!group.current) return;
     const t = scroll.current;
 
+    group.current.position.x = THREE.MathUtils.damp(
+      group.current.position.x, offsetX, 5, delta,
+    );
+
     if (still) {
       // One fixed three-quarter view: the angle that shows the squared
       // profile and the rake at the same time.
       group.current.rotation.y = -0.5;
+      group.current.position.y = baseY;
+      group.current.scale.setScalar(baseScale);
       return;
     }
 
@@ -80,9 +101,11 @@ function Rig({ children, still }: { children: React.ReactNode; still: boolean })
 
     // The product settles lower and further back as the page moves on, so
     // the copy below has the visual weight once it arrives.
-    group.current.position.y = THREE.MathUtils.damp(group.current.position.y, -t * 0.5, 4, delta);
+    group.current.position.y = THREE.MathUtils.damp(
+      group.current.position.y, baseY - t * 0.5, 4, delta,
+    );
     group.current.scale.setScalar(
-      THREE.MathUtils.damp(group.current.scale.x, 1 - t * 0.14, 4, delta),
+      THREE.MathUtils.damp(group.current.scale.x, baseScale * (1 - t * 0.14), 4, delta),
     );
   });
 
@@ -112,12 +135,14 @@ export function Stage({
         // near y = -0.15, and at fov 34 that needs roughly 4 units of throw
         // to sit in frame with air around it. The earlier camera was closer
         // than the model was tall, which is why it was cropped.
-        camera={{ position: [0, 0.35, 4.2], fov: 34 }}
+        camera={{ position: [0, 0.45, 5.3], fov: 32 }}
         // Capped: a 3x phone renders 9x the pixels for a difference nobody
         // sees, on the battery of someone browsing over mobile data.
         dpr={[1, 1.75]}
         gl={{ antialias: true, powerPreference: "high-performance" }}
-        onCreated={({ camera }) => camera.lookAt(0, -0.15, 0)}
+        // Aimed a little high: an open cover adds nearly its own length
+        // above the hinge, and that headroom has to be in frame.
+        onCreated={({ camera }) => camera.lookAt(0, -0.05, 0)}
       >
         <color attach="background" args={["#141312"]} />
         {/* Depth cue rather than decoration: the far wall falls away, which

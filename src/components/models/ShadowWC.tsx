@@ -109,7 +109,11 @@ function useRoundedSlab(w: number, d: number, h: number, r: number) {
   }, [w, d, h, r]);
 }
 
-export function ShadowWC(props: React.ComponentProps<"group">) {
+export function ShadowWC({
+  /** 0 = closed, 1 = fully open. Driven by the Showroom. */
+  lidOpen = 0,
+  ...props
+}: React.ComponentProps<"group"> & { lidOpen?: number }) {
   // ── Dimensions ────────────────────────────────────────────────────────
   const BOWL_W = 0.80;
   const BOWL_D = 1.28;
@@ -158,6 +162,13 @@ export function ShadowWC(props: React.ComponentProps<"group">) {
   );
 
   const seatTop = FLOOR + BOWL_H;
+  /** The hinge line, at the rear of the pan where the fixings sit. */
+  const HINGE_Z = BOWL_Z - BOWL_D / 2 + 0.19;
+  /** Just short of vertical, leaning back against the cistern — which is
+      where a real cover stops. Taken past vertical it swings up and behind
+      instead, and on a cover nearly as long as the pan that puts the far
+      edge a metre above the hinge and straight out of frame. */
+  const OPEN_ANGLE = Math.PI * 0.47;
 
   return (
     <group {...props}>
@@ -179,16 +190,45 @@ export function ShadowWC(props: React.ComponentProps<"group">) {
         <primitive object={chrome} attach="material" />
       </mesh>
 
-      <mesh geometry={seat} material={plastic} position={[0, seatTop, BOWL_Z + 0.08]} castShadow />
-      <mesh geometry={cover} material={plastic} position={[0, seatTop + 0.055, BOWL_Z + 0.08]} castShadow />
+      {/* ── Seat and cover ────────────────────────────────────────────────
+          Both hinge at the rear, and they hinge as real ones do: the cover
+          alone at first, then the seat ring following it up once the cover
+          has cleared. The pivot is the hinge line itself, so each part
+          swings on its own edge rather than around the middle of the pan —
+          which is the difference between a lid opening and a lid sliding.
 
-      {/* Hinges: small, but their absence is why a modelled seat looks fake. */}
-      {[-0.16, 0.16].map((x) => (
-        <mesh key={x} position={[x, seatTop + 0.04, BOWL_Z - BOWL_D / 2 + 0.20]} castShadow>
-          <cylinderGeometry args={[0.028, 0.028, 0.055, 12]} />
-          <primitive object={chrome} attach="material" />
-        </mesh>
-      ))}
+          Rotation is negative about X so they fall away from the viewer,
+          toward the cistern, exactly like the real thing. */}
+      <group position={[0, seatTop + 0.02, HINGE_Z]}>
+        {/* Seat ring: lifts only after the cover is most of the way up. */}
+        <group rotation={[-Math.max(0, lidOpen - 0.55) / 0.45 * OPEN_ANGLE * 0.92, 0, 0]}>
+          <mesh
+            geometry={seat}
+            material={plastic}
+            position={[0, -0.02, BOWL_Z + 0.08 - HINGE_Z]}
+            castShadow
+          />
+        </group>
+
+        {/* Cover. */}
+        <group rotation={[-Math.min(lidOpen / 0.7, 1) * OPEN_ANGLE, 0, 0]}>
+          <mesh
+            geometry={cover}
+            material={plastic}
+            position={[0, 0.035, BOWL_Z + 0.08 - HINGE_Z]}
+            castShadow
+          />
+        </group>
+
+        {/* Hinges: small, but their absence is why a modelled seat looks
+            fake — and here they are also the visible axis the parts turn on. */}
+        {[-0.17, 0.17].map((x) => (
+          <mesh key={x} position={[x, 0.01, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+            <cylinderGeometry args={[0.03, 0.03, 0.07, 14]} />
+            <primitive object={chrome} attach="material" />
+          </mesh>
+        ))}
+      </group>
     </group>
   );
 }

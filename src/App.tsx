@@ -45,7 +45,7 @@ function Header() {
     <header className="fixed inset-x-0 top-0 z-40 border-b border-hairline/60 bg-void/70 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4">
         <div className="min-w-0">
-          <span className="font-display text-lg font-semibold tracking-tight">
+          <span className="display text-xl">
             {BUSINESS.name}
           </span>
           <span className="ml-2 hidden truncate text-xs text-chalk-soft sm:inline">
@@ -86,19 +86,25 @@ function Hero() {
         {/* The floor of the 3D room fades into the page, so the canvas has no
             visible bottom edge and the section below reads as the same space
             rather than a different one. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40
-                        bg-gradient-to-b from-transparent to-void" />
+        {/* Two jobs. It fades the 3D floor into the page so the canvas has
+            no visible bottom edge — and on a phone, where the product and the
+            copy share one column, it is what the text is legible against. */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%]
+                        bg-gradient-to-t from-void via-void/92 to-transparent
+                        sm:h-40 sm:via-transparent" />
       </div>
 
       <div className="pointer-events-none relative -mt-[100svh] min-h-[100svh]">
         <div className="mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-5 pb-16 pt-28
                         sm:justify-center sm:pb-24">
           <div className="max-w-xl">
-            <h1 className="font-display text-[2.6rem] leading-[1.03] tracking-tight
-                           [text-shadow:0_2px_24px_rgba(0,0,0,0.6)] sm:text-6xl lg:text-7xl">
-              The whole bathroom,
+            <h1 className="display text-[3.4rem] [text-shadow:0_4px_40px_rgba(0,0,0,0.75)]
+                           sm:text-[5.5rem] lg:text-[7rem]">
+              The whole
               <br />
-              from one supplier.
+              bathroom.
+              <br />
+              <span className="text-gold">One supplier.</span>
             </h1>
             <p className="mt-5 max-w-md text-base leading-relaxed text-chalk-soft
                           [text-shadow:0_1px_14px_rgba(0,0,0,0.7)]">
@@ -127,8 +133,8 @@ function Hero() {
             <p className="mt-5 text-xs text-chalk-soft">
               Open {BUSINESS.hours} · {BUSINESS.headOffice}
             </p>
-            <p className="mt-6 text-[11px] uppercase tracking-[0.2em] text-chalk-soft/60">
-              Scroll to turn
+            <p className="mt-8 text-[10px] uppercase tracking-[0.28em] text-chalk-soft/50">
+              Scroll to turn · tap the seat to open
             </p>
           </div>
         </div>
@@ -149,7 +155,7 @@ function Brands() {
         </p>
         <ul className="mt-4 flex flex-wrap gap-x-8 gap-y-3">
           {BUSINESS.brands.map((b) => (
-            <li key={b} className="font-display text-xl tracking-tight text-chalk/90">
+            <li key={b} className="display text-2xl text-chalk/85">
               {b}
             </li>
           ))}
@@ -163,7 +169,7 @@ function Range() {
   return (
     <section id="range" className="scroll-mt-20">
       <div className="mx-auto max-w-6xl px-5 py-16 lg:py-24">
-        <h2 className="font-display text-3xl tracking-tight sm:text-4xl">What we supply</h2>
+        <h2 className="display text-5xl sm:text-6xl lg:text-7xl">What we supply</h2>
         <p className="mt-3 max-w-lg text-chalk-soft">
           Everything a bathroom needs, in finishes that match. Fitting a whole
           house? Send the plan and we will price it as one order.
@@ -173,7 +179,7 @@ function Range() {
                         bg-hairline sm:grid-cols-2 lg:grid-cols-3">
           {CATEGORIES.map((c) => (
             <div key={c.name} className="flex flex-col bg-surface p-6">
-              <h3 className="font-display text-xl tracking-tight">{c.name}</h3>
+              <h3 className="display text-2xl">{c.name}</h3>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-chalk-soft">{c.detail}</p>
               {/* Per-category, so the chat opens naming what they were
                   reading. "Do you have rainfall showers?" beats "hi". */}
@@ -195,9 +201,7 @@ function Range() {
 
         {PRODUCTS.length > 0 && (
           <>
-            <h2 className="mt-20 font-display text-3xl tracking-tight sm:text-4xl">
-              In stock now
-            </h2>
+            <h2 className="mt-24 display text-5xl sm:text-6xl lg:text-7xl">In stock now</h2>
             <p className="mt-3 max-w-lg text-chalk-soft">
               Photographed on our own floor at Mile 3 — not catalogue pictures
               of things we would have to order in.
@@ -218,7 +222,7 @@ function Range() {
                     />
                   </div>
                   <div className="p-5">
-                    <h3 className="font-display text-lg tracking-tight">{p.name}</h3>
+                    <h3 className="display text-xl">{p.name}</h3>
                     <p className="mt-1 text-sm text-chalk-soft">{p.blurb}</p>
                     {p.price && (
                       <p className="mt-2 text-sm font-semibold tabular text-gold">{p.price}</p>
@@ -245,9 +249,7 @@ function Contact() {
   return (
     <section className="border-t border-hairline bg-surface/40">
       <div className="mx-auto max-w-6xl px-5 py-16 text-center lg:py-24">
-        <h2 className="font-display text-3xl tracking-tight sm:text-4xl">
-          Ready when you are
-        </h2>
+        <h2 className="display text-5xl sm:text-6xl lg:text-7xl">Ready when you are</h2>
         <p className="mx-auto mt-3 max-w-md text-chalk-soft">
           Send a photo of what you need, or of the room you are fitting. We
           will tell you what it costs and how soon it can reach you.
@@ -285,7 +287,7 @@ function Footer() {
     <footer className="border-t border-hairline">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3
                       px-5 py-8 text-sm text-chalk-soft sm:flex-row">
-        <span className="font-display text-base text-chalk">{BUSINESS.legalName}</span>
+        <span className="display text-base text-chalk">{BUSINESS.legalName}</span>
         <span>Open {BUSINESS.hours} · {BUSINESS.location}</span>
         <a
           href={`tel:+${BUSINESS.phoneDisplay.replace(/\D/g, "")}`}
