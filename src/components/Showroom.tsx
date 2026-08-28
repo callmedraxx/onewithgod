@@ -96,10 +96,11 @@ export function Showroom() {
           things the shop actually stocks and a buyer names on the phone, and
           seeing the gold on a real form beats imagining it from a swatch.
           Bottom-left, clear of the WhatsApp button's corner. */}
-      <div className="absolute bottom-8 left-5 z-20 flex items-center gap-1.5 rounded-full
-                      border border-hairline bg-void/80 p-1.5 backdrop-blur
-                      sm:bottom-10 sm:left-10">
-        <span className="px-2 text-[10px] uppercase tracking-[0.18em] text-chalk-soft/70">
+      <div className="absolute bottom-5 left-4 z-20 flex items-center gap-1 rounded-full
+                      border border-hairline bg-void/85 p-1 backdrop-blur
+                      sm:bottom-10 sm:left-10 sm:gap-1.5 sm:p-1.5">
+        <span className="hidden px-2 text-[10px] uppercase tracking-[0.18em]
+                         text-chalk-soft/70 sm:inline">
           Finish
         </span>
         {FINISHES.map((f) => (
@@ -108,8 +109,8 @@ export function Showroom() {
             type="button"
             onClick={() => setFinish(f.id)}
             aria-pressed={finish === f.id}
-            className={`rounded-full px-3 py-1.5 text-[10px] uppercase tracking-[0.16em]
-                        transition-colors ${
+            className={`rounded-full px-2.5 py-1.5 text-[9px] uppercase tracking-[0.12em]
+                        transition-colors sm:px-3 sm:text-[10px] sm:tracking-[0.16em] ${
                           finish === f.id
                             ? "bg-chalk text-void"
                             : "text-chalk-soft hover:text-chalk"

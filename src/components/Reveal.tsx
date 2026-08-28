@@ -24,12 +24,14 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export type RevealKind = "mask" | "rise" | "scale";
+export type RevealKind = "mask" | "rise" | "scale" | "left" | "right" | "fade" | "blur";
 
 export function Reveal({
   children,
   kind = "rise",
   delay = 0,
+  /** "fast" for small or secondary things, so the page is not one tempo. */
+  speed = "normal",
   as: Tag = "div",
   className = "",
 }: {
@@ -37,6 +39,7 @@ export function Reveal({
   kind?: RevealKind;
   /** Seconds. Used to lead the eye along a row, not to make people wait. */
   delay?: number;
+  speed?: "fast" | "normal" | "slow";
   as?: React.ElementType;
   className?: string;
 }) {
@@ -92,6 +95,7 @@ export function Reveal({
         <span
           data-reveal="mask"
           data-shown={shown ? "true" : undefined}
+          data-speed={speed}
           style={style}
           className="block"
         >
@@ -106,6 +110,7 @@ export function Reveal({
       ref={ref}
       data-reveal={kind}
       data-shown={shown ? "true" : undefined}
+      data-speed={speed}
       style={style}
       className={className}
     >

@@ -137,12 +137,20 @@
      an animation playing. */
 
   .js [data-reveal] {
+    --reveal-dur: 0.9s;
     transition:
-      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s),
-      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s),
-      clip-path 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s);
+      opacity calc(var(--reveal-dur) * 0.78) cubic-bezier(0.16, 1, 0.3, 1)
+        var(--reveal-delay, 0s),
+      transform var(--reveal-dur) cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s),
+      filter var(--reveal-dur) cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s),
+      clip-path var(--reveal-dur) cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s);
     will-change: opacity, transform;
   }
+
+  /* Three tempos, so the page is not one metronome. Small and secondary
+     things snap; the headline takes its time. */
+  .js [data-reveal][data-speed="fast"] { --reveal-dur: 0.45s; }
+  .js [data-reveal][data-speed="slow"] { --reveal-dur: 1.25s; }
 
   /* A heavy condensed heading wiping up out of its own baseline. The mask
      is the reason this suits display type and nothing else: the letterforms
@@ -174,9 +182,40 @@
     transform: translateY(1.4rem) scale(0.985);
   }
 
+  /* Lateral, for things that belong to a row or a margin — a list of brand
+     names arriving from the side reads as a line being written, which a
+     column of things rising does not. */
+  .js [data-reveal="left"]:not([data-shown]) {
+    opacity: 0;
+    transform: translateX(-1.6rem);
+  }
+
+  .js [data-reveal="right"]:not([data-shown]) {
+    opacity: 0;
+    transform: translateX(1.6rem);
+  }
+
+  /* No movement at all. Some things should simply be there a moment later —
+     motion on every single element is its own kind of noise. */
+  .js [data-reveal="fade"]:not([data-shown]) {
+    opacity: 0;
+  }
+
+  /* Pulls focus, literally: for a headline the eye should land on. */
+  .js [data-reveal="blur"]:not([data-shown]) {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(0.5rem);
+  }
+
   .js [data-reveal="rise"][data-shown],
-  .js [data-reveal="scale"][data-shown] {
+  .js [data-reveal="scale"][data-shown],
+  .js [data-reveal="left"][data-shown],
+  .js [data-reveal="right"][data-shown],
+  .js [data-reveal="fade"][data-shown],
+  .js [data-reveal="blur"][data-shown] {
     opacity: 1;
+    filter: none;
     transform: none;
   }
 
@@ -201,6 +240,7 @@
       opacity: 1 !important;
       transform: none !important;
       clip-path: none !important;
+      filter: none !important;
       transition: none !important;
     }
   }

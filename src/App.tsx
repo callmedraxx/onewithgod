@@ -74,7 +74,30 @@ function Header() {
 function Hero() {
   return (
     <section className="relative">
-      <div className="sticky top-0 h-[100svh] w-full">
+      <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
+        {/* The room. A real bathroom, thrown out of focus the way a fast
+            lens does it, so it reads as the place the fixture is standing in
+            without competing with it for a single pixel of attention.
+            Pre-blurred to 15kB rather than filtered in CSS — a large blurred
+            layer is cheap to composite but expensive to rasterise on a
+            phone. */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url(/bathroom-backdrop.jpg)" }}
+          aria-hidden="true"
+        />
+        {/* Sunk further at the edges than the middle: a vignette is what
+            stops a backdrop reading as wallpaper, and it holds the copy's
+            corner dark enough to read on. */}
+        <div
+          className="absolute inset-0"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(115% 85% at 64% 40%, rgba(20,19,18,0.05) 0%, rgba(20,19,18,0.5) 55%, rgba(20,19,18,0.88) 100%)",
+          }}
+        />
+
         <Suspense
           fallback={
             /* Not a spinner. The room's own colour, so nothing flashes and
@@ -90,9 +113,9 @@ function Hero() {
         {/* Two jobs. It fades the 3D floor into the page so the canvas has
             no visible bottom edge — and on a phone, where the product and the
             copy share one column, it is what the text is legible against. */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%]
-                        bg-gradient-to-t from-void via-void/92 to-transparent
-                        sm:h-40 sm:via-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[58%]
+                        bg-gradient-to-t from-void via-void/94 to-transparent
+                        sm:h-44 sm:via-transparent" />
       </div>
 
       <div className="pointer-events-none relative -mt-[100svh] min-h-[100svh]">
@@ -104,12 +127,14 @@ function Hero() {
             <h1 className="display text-[3.4rem] [text-shadow:0_4px_40px_rgba(0,0,0,0.75)]
                            sm:text-[5.5rem] lg:text-[7rem]">
               <Reveal kind="mask" as="span" className="block">The whole</Reveal>
-              <Reveal kind="mask" as="span" className="block" delay={0.09}>bathroom.</Reveal>
+              <Reveal kind="mask" as="span" className="block" delay={0.09} speed="slow">
+                bathroom.
+              </Reveal>
               <Reveal kind="mask" as="span" className="block text-gold" delay={0.18}>
                 One supplier.
               </Reveal>
             </h1>
-            <Reveal kind="rise" delay={0.3} as="p"
+            <Reveal kind="blur" delay={0.3} as="p"
                     className="mt-5 max-w-md text-base leading-relaxed text-chalk-soft
                                [text-shadow:0_1px_14px_rgba(0,0,0,0.7)]">
               Toilets, basins, showers, taps and the fittings that join them.
@@ -120,7 +145,7 @@ function Hero() {
 
             {/* Pointer events are re-enabled only on the controls, so the rest
                 of the overlay lets the visitor drag the room behind it. */}
-            <Reveal kind="rise" delay={0.4}
+            <Reveal kind="rise" delay={0.4} speed="fast"
                     className="pointer-events-auto mt-8 flex flex-wrap items-center gap-3">
               <WhatsAppButton message={GENERAL_ENQUIRY}>
                 Message us on WhatsApp
@@ -138,7 +163,10 @@ function Hero() {
             <p className="mt-5 text-xs text-chalk-soft">
               Open {BUSINESS.hours} · {BUSINESS.headOffice}
             </p>
-            <p className="mt-8 text-[10px] uppercase tracking-[0.28em] text-chalk-soft/50">
+            {/* Hidden on phones: the finish pills occupy that corner there,
+                and the two were printing over each other. */}
+            <p className="mt-8 hidden text-[10px] uppercase tracking-[0.28em]
+                          text-chalk-soft/50 sm:block">
               Scroll to turn · tap the seat to open
             </p>
           </div>
@@ -160,7 +188,7 @@ function Brands() {
         </p>
         <ul className="mt-4 flex flex-wrap gap-x-8 gap-y-3">
           {BUSINESS.brands.map((b, i) => (
-            <Reveal key={b} kind="rise" as="li" delay={i * 0.05}
+            <Reveal key={b} kind="left" as="li" delay={i * 0.045} speed="fast"
                     className="display text-2xl text-chalk/85">
               {b}
             </Reveal>
@@ -176,7 +204,7 @@ function Range() {
     <section id="range" className="scroll-mt-20">
       <div className="mx-auto max-w-6xl px-5 py-16 lg:py-24">
         <Reveal kind="mask" as="h2" className="display text-5xl sm:text-6xl lg:text-7xl">What we supply</Reveal>
-        <Reveal kind="rise" as="p" delay={0.08} className="mt-3 max-w-lg text-chalk-soft">
+        <Reveal kind="fade" as="p" delay={0.12} className="mt-3 max-w-lg text-chalk-soft">
           Everything a bathroom needs, in finishes that match. Fitting a whole
           house? Send the plan and we will price it as one order.
         </Reveal>
@@ -186,10 +214,13 @@ function Range() {
           {CATEGORIES.map((c, i) => (
             <Reveal
               key={c.name}
-              kind="rise"
+              /* Alternating by column, so a grid of six arrives as a weave
+                 rather than a queue. */
+              kind={i % 2 === 0 ? "left" : "right"}
+              speed="fast"
               /* Capped at the third item: past that the delay stops leading
                  the eye and starts making the last card look broken. */
-              delay={Math.min(i, 2) * 0.08}
+              delay={Math.min(i, 2) * 0.07}
               className="flex flex-col bg-surface p-6"
             >
               <h3 className="display text-2xl">{c.name}</h3>
@@ -215,7 +246,7 @@ function Range() {
         {PRODUCTS.length > 0 && (
           <>
             <Reveal kind="mask" as="h2" className="mt-24 display text-5xl sm:text-6xl lg:text-7xl">In stock now</Reveal>
-            <Reveal kind="rise" as="p" delay={0.08} className="mt-3 max-w-lg text-chalk-soft">
+            <Reveal kind="fade" as="p" delay={0.12} className="mt-3 max-w-lg text-chalk-soft">
               Photographed on our own floor at Mile 3 — not catalogue pictures
               of things we would have to order in.
             </Reveal>
@@ -224,7 +255,8 @@ function Range() {
                 <Reveal
                   key={p.id}
                   kind="scale"
-                  delay={i * 0.09}
+                  speed="slow"
+                  delay={i * 0.1}
                   as="article"
                   className="group overflow-hidden rounded-2xl border border-hairline bg-surface"
                 >
@@ -266,7 +298,7 @@ function Contact() {
     <section className="border-t border-hairline bg-surface/40">
       <div className="mx-auto max-w-6xl px-5 py-16 text-center lg:py-24">
         <Reveal kind="mask" as="h2" className="display text-5xl sm:text-6xl lg:text-7xl">Ready when you are</Reveal>
-        <Reveal kind="rise" as="p" delay={0.08} className="mx-auto mt-3 max-w-md text-chalk-soft">
+        <Reveal kind="fade" as="p" delay={0.12} className="mx-auto mt-3 max-w-md text-chalk-soft">
           Send a photo of what you need, or of the room you are fitting. We
           will tell you what it costs and how soon it can reach you.
         </Reveal>
@@ -284,11 +316,11 @@ function Contact() {
         </div>
 
         <dl className="mx-auto mt-12 grid max-w-2xl gap-5 text-left sm:grid-cols-2">
-          <Reveal kind="scale" className="rounded-2xl border border-hairline bg-surface p-5">
+          <Reveal kind="left" speed="fast" className="rounded-2xl border border-hairline bg-surface p-5">
             <dt className="text-xs uppercase tracking-[0.16em] text-chalk-soft">Head office</dt>
             <dd className="mt-1.5 text-sm">{BUSINESS.headOffice}</dd>
           </Reveal>
-          <Reveal kind="scale" delay={0.09}
+          <Reveal kind="right" speed="fast" delay={0.06}
                   className="rounded-2xl border border-hairline bg-surface p-5">
             <dt className="text-xs uppercase tracking-[0.16em] text-chalk-soft">Showroom</dt>
             <dd className="mt-1.5 text-sm">{BUSINESS.showroom}</dd>

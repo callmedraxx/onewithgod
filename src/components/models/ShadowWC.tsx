@@ -179,7 +179,13 @@ export function ShadowWC({
   const BOWL_Z = 0.16;
   const CIS_Z = BOWL_Z - BOWL_D / 2 + CIS_D / 2 - 0.01;
   const seatTop = FLOOR + BOWL_H;
-  const HINGE_Z = BOWL_Z - BOWL_D / 2 + 0.17;
+  /* The hinge must sit IN FRONT of the cistern's front face, which is where
+     a real one is bolted. Previously it was at 0.17 back from the pan's rear
+     edge — inside the cistern volume — so the raised cover swung up THROUGH
+     the tank and you could see the tank standing inside the lid. It is now
+     clear of the cistern, and the cover occludes it properly when open. */
+  const CIS_FRONT = BOWL_Z - BOWL_D / 2 + CIS_D;
+  const HINGE_Z = CIS_FRONT + 0.035;
   /* Just short of vertical, resting back on the cistern — where a real cover
      stops. Past vertical it swings up and behind, and on a cover nearly as
      long as the pan that throws the far edge out of frame. */
@@ -334,7 +340,11 @@ export function ShadowWC({
 
           Negative rotation about X, so they fall away toward the cistern. */}
       <group position={[0, seatTop + 0.03, HINGE_Z]}>
-        <group rotation={[-Math.max(0, lidOpen - 0.55) / 0.45 * OPEN_ANGLE * 0.93, 0, 0]}>
+        {/* 0.975, not 0.93. At a seven-degree spread the two read as two
+            separate boards standing side by side rather than a seat with its
+            cover resting on it — the gap is realistic but at this scale it
+            just looks like a fault. */}
+        <group rotation={[-Math.max(0, lidOpen - 0.5) / 0.5 * OPEN_ANGLE * 0.975, 0, 0]}>
           <mesh
             geometry={seat}
             material={plastic}

@@ -17,7 +17,6 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ContactShadows, Environment } from "@react-three/drei";
-import { Bathroom } from "@/components/Bathroom";
 import type { Group } from "three";
 import * as THREE from "three";
 
@@ -57,8 +56,8 @@ function Rig({ children, still }: { children: React.ReactNode; still: boolean })
      the copy takes the lower. Without this it sat dead centre and the body
      text ran straight across bright white ceramic — unreadable at any
      text-shadow. */
-  const baseY = wide ? 0 : 0.42;
-  const baseScale = wide ? 1 : 0.54;
+  const baseY = wide ? 0 : 0.58;
+  const baseScale = wide ? 1 : 0.46;
 
   useEffect(() => {
     if (still) return;
@@ -87,16 +86,15 @@ function Rig({ children, still }: { children: React.ReactNode; still: boolean })
       return;
     }
 
-    /* No constant spin any more. The pan is back-to-wall and installed
-       against the tiles now, and a fixture revolving freely inside its own
-       bathroom destroys the one thing the room was added to establish. What
-       is left is a slow drift the visitor drives: scrolling turns it about
-       thirty degrees, enough to read the profile and the front, and it
-       breathes very slightly so the frame is never completely dead. */
-    const idle = Math.sin(state.clock.elapsedTime * 0.22) * 0.035;
-    const target = -0.42 + t * 0.55 + idle;
+    /* A full turn on standby, plus what scrolling adds. The room is a
+       photograph behind the product now rather than geometry around it, so
+       nothing is broken by the object rotating — and a slow revolve is how
+       the back and both sides get seen at all. About forty seconds a turn:
+       fast enough to read as alive, slow enough not to compete with the
+       copy beside it. */
+    const target = state.clock.elapsedTime * 0.16 + t * Math.PI * 0.6 - 0.42;
     group.current.rotation.y = THREE.MathUtils.damp(
-      group.current.rotation.y, target, 5, delta,
+      group.current.rotation.y, target, 6, delta,
     );
 
     // Parallax from the cursor, deliberately small. Enough that the object
@@ -145,37 +143,37 @@ export function Stage({
         // Capped: a 3x phone renders 9x the pixels for a difference nobody
         // sees, on the battery of someone browsing over mobile data.
         dpr={[1, 1.75]}
-        gl={{ antialias: true, powerPreference: "high-performance" }}
+        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         // Aimed a little high: an open cover adds nearly its own length
         // above the hinge, and that headroom has to be in frame.
         onCreated={({ camera }) => camera.lookAt(0, -0.05, 0)}
       >
-        <color attach="background" args={["#151413"]} />
-        {/* Holds the far end of the room back so the walls read as receding
-            rather than as a flat panel behind the product. */}
-        <fog attach="fog" args={["#151413", 6, 17]} />
+        {/* No background and no fog. The room is a photograph in the page
+            behind this canvas, blurred the way a fast lens throws it, and
+            the product composites over it sharp — which is how a fixture is
+            actually shot, and it means the model is free to turn without
+            fighting geometry that has to stay still. */}
 
-        {/* The room supplies most of the light now — a window off frame to
-            the left and a warm bounce from the right. What is left here is
-            the fill that keeps the shadow side of white ceramic from going
-            dead, and one key with a shadow so the pan is planted on the
-            tiles rather than hovering over them. */}
-        <ambientLight intensity={0.3} />
+        {/* Matched to the photograph behind: its light comes from a window
+            on the left, so the key does too. Get this wrong and the eye
+            reads the composite instantly, however good the model is. */}
+        <ambientLight intensity={0.55} />
         <spotLight
-          position={[-2.6, 5.4, 3.2]}
-          angle={0.62}
-          penumbra={0.9}
-          intensity={95}
+          position={[-3.4, 5, 3.4]}
+          angle={0.7}
+          penumbra={0.95}
+          intensity={120}
           castShadow
           shadow-mapSize={[1024, 1024]}
           shadow-bias={-0.0004}
         />
-        {/* Rim from behind: white ceramic against a light wall needs its
-            silhouette drawn, or the two merge at the edges. */}
-        <directionalLight position={[0.5, 3.2, -4]} intensity={0.9} />
+        {/* Warm bounce from the right, as the backdrop's own walls would
+            give. */}
+        <directionalLight position={[4, 2, 2.5]} intensity={0.7} color="#f4e3cd" />
+        {/* Rim from behind, to cut the silhouette out of a soft backdrop. */}
+        <directionalLight position={[0.5, 3.2, -4]} intensity={1.1} />
 
         <Suspense fallback={null}>
-          <Bathroom />
           <Rig still={still}>{children}</Rig>
 
           {/* Tightened onto the base: the pan meets the tiles over a small
