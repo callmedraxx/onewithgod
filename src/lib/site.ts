@@ -7,25 +7,31 @@
 
 /* ── Contact ──────────────────────────────────────────────────────────────
  * WhatsApp needs the number in full international form, digits only, with NO
- * leading + and no spaces. Nigeria is country code 234, and the local leading
- * 0 is DROPPED: 0803 123 4567 becomes 2348031234567.
+ * leading + and no spaces. Nigeria is country code 234 and the local leading
+ * 0 is DROPPED: 0706 494 6102 becomes 2347064946102.
  *
- * ⚠️ PLACEHOLDER — replace with the real number before this goes live.
- * A wrong number here is worse than no site at all: every button on the page
- * leads here, so a typo sends every customer to a stranger.
+ * Taken from the WhatsApp Business profile itself, which is the one place the
+ * number is guaranteed to be the one that actually receives messages.
  */
-export const WHATSAPP_NUMBER = "2340000000000";
-
-/** True once a real number has been set, used to hard-fail loudly in dev. */
-export const HAS_REAL_NUMBER = WHATSAPP_NUMBER !== "2340000000000";
+export const WHATSAPP_NUMBER = "2347064946102";
 
 export const BUSINESS = {
   name: "ONEWITHGOD",
+  legalName: "ONEWITHGOD Current Bathroom Lodge Ltd.",
+  initials: "OCBL",
   tagline: "Bathroom & sanitary ware",
   /** Shown to humans; formatted for reading, not for dialling. */
-  phoneDisplay: "+234 000 000 0000",
-  location: "Nigeria",
-  hours: "Mon – Sat, 8am – 6pm",
+  phoneDisplay: "+234 706 494 6102",
+  headOffice: "223 Ikwerre Road, Mile 3, Port Harcourt",
+  showroom: "Eketa Plaza, opposite Environmental Office, Port Harcourt",
+  location: "Port Harcourt, Nigeria",
+  /** From the WhatsApp Business profile. */
+  hours: "7:30am – 6:00pm",
+  /** Named on the shopfront banner. A distributor's brands are its
+   *  credentials in this trade — buyers ask for them by name. */
+  brands: [
+    "Sweethome", "Maxilon", "Esca Standard", "Harmony", "M-Mat", "Rejoice", "Pure",
+  ],
 } as const;
 
 /**
@@ -62,4 +68,19 @@ export interface Product {
   price?: string;
 }
 
-export const PRODUCTS: Product[] = [];
+export const PRODUCTS: Product[] = [
+  {
+    id: "shadow-suite",
+    name: "Sweethome SHADOW suite",
+    blurb:
+      "Square close-coupled WC and matching pedestal basin. The set in the hero, fitted.",
+    image: "/products/shadow-suite.jpg",
+  },
+  {
+    id: "shadow-showroom",
+    name: "SHADOW WC & basin — in stock",
+    blurb:
+      "Photographed on the showroom floor at Mile 3. Ready to collect or be delivered.",
+    image: "/products/shadow-showroom.jpg",
+  },
+];

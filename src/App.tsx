@@ -1,7 +1,7 @@
 import { lazy, Suspense } from "react";
 import { FloatingWhatsApp, WhatsAppButton, WhatsAppMark } from "@/components/WhatsApp";
 import {
-  BUSINESS, GENERAL_ENQUIRY, HAS_REAL_NUMBER, PRODUCTS, productEnquiry, whatsappLink,
+  BUSINESS, GENERAL_ENQUIRY, PRODUCTS, productEnquiry, whatsappLink,
 } from "@/lib/site";
 
 /* The 3D showroom is ~900kB of three.js. This audience is largely on mobile
@@ -43,7 +43,7 @@ function Header() {
             {BUSINESS.name}
           </span>
           <span className="ml-2 hidden text-xs text-ink-soft sm:inline">
-            {BUSINESS.tagline}
+            Current Bathroom Lodge · Port Harcourt
           </span>
         </div>
         <a
@@ -67,9 +67,10 @@ function Hero() {
           from one supplier.
         </h1>
         <p className="mt-5 max-w-md text-base leading-relaxed text-ink-soft">
-          Toilets, basins, showers, taps and the fittings that join them —
-          supplied across {BUSINESS.location}. Tell us what you need and we
-          will quote you on WhatsApp today.
+          Toilets, basins, showers, taps and the fittings that join them.
+          Distributors in Port Harcourt, supplying builders, plumbers and
+          homeowners. Tell us what you need and we will price it on WhatsApp
+          today.
         </p>
 
         <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -87,7 +88,7 @@ function Hero() {
         </div>
 
         <p className="mt-4 text-xs text-ink-soft">
-          {BUSINESS.hours} · Replies usually within the hour
+          Open {BUSINESS.hours} · {BUSINESS.headOffice}
         </p>
       </div>
 
@@ -108,14 +109,28 @@ function Hero() {
             Drag to turn
           </p>
         </div>
-        {!HAS_REAL_NUMBER && (
-          <p className="mt-3 rounded-xl border border-dashed border-hairline bg-white px-4 py-3
-                        text-xs text-ink-soft">
-            <strong className="text-ink">Not live yet.</strong> The model above is a
-            stand-in, and the WhatsApp number is a placeholder — both are replaced
-            before launch.
-          </p>
-        )}
+      </div>
+    </section>
+  );
+}
+
+/* Buyers in this trade ask for brands by name, so the shopfront banner
+   lists them and so does this. It is the closest thing to a credential a
+   distributor has. */
+function Brands() {
+  return (
+    <section className="border-t border-hairline bg-white/60">
+      <div className="mx-auto max-w-6xl px-5 py-8">
+        <p className="text-xs uppercase tracking-[0.18em] text-ink-soft">
+          Authorised distributors of
+        </p>
+        <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+          {BUSINESS.brands.map((b) => (
+            <li key={b} className="font-display text-lg tracking-tight">
+              {b}
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );
@@ -217,6 +232,16 @@ function Contact() {
           Send a photo of what you need or the room you are fitting. We will
           tell you what it costs and how soon it can reach you.
         </p>
+        <dl className="mx-auto mt-8 grid max-w-2xl gap-6 text-left sm:grid-cols-2">
+          <div className="rounded-2xl border border-hairline bg-white p-5">
+            <dt className="text-xs uppercase tracking-wider text-ink-soft">Head office</dt>
+            <dd className="mt-1 text-sm">{BUSINESS.headOffice}</dd>
+          </div>
+          <div className="rounded-2xl border border-hairline bg-white p-5">
+            <dt className="text-xs uppercase tracking-wider text-ink-soft">Showroom</dt>
+            <dd className="mt-1 text-sm">{BUSINESS.showroom}</dd>
+          </div>
+        </dl>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <WhatsAppButton message={GENERAL_ENQUIRY}>
             Start a WhatsApp chat
@@ -240,8 +265,8 @@ function Footer() {
     <footer className="border-t border-hairline bg-white">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3
                       px-5 py-8 text-sm text-ink-soft sm:flex-row">
-        <span className="font-display text-base text-ink">{BUSINESS.name}</span>
-        <span>{BUSINESS.tagline} · {BUSINESS.location}</span>
+        <span className="font-display text-base text-ink">{BUSINESS.legalName}</span>
+        <span>Open {BUSINESS.hours} · {BUSINESS.location}</span>
         <a
           href={`tel:${BUSINESS.phoneDisplay.replace(/\s/g, "")}`}
           className="tabular transition-colors hover:text-ink"
@@ -259,6 +284,7 @@ export default function App() {
       <Header />
       <main>
         <Hero />
+        <Brands />
         <Range />
         <Contact />
       </main>
