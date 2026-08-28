@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+/* ONEWITHGOD — bathroom and sanitary ware.
+ *
+ * Persuade surface: the visitor decides and acts, so the design is the
+ * product. Every road leads to WhatsApp.
+ *
+ * The world is picked from the use scene rather than from category habit.
+ * Buyers open this on a phone, often outdoors in daylight, comparing a
+ * fitting against three other sellers. So: a bright porcelain gallery, not a
+ * dark showroom. White ceramic photographed on white needs a ground that is
+ * warm rather than pure #fff, or the product edges dissolve into the page.
+ */
+
+@theme {
+  --color-porcelain: oklch(0.98 0.004 85);
+  --color-porcelain-deep: oklch(0.955 0.006 85);
+  --color-ink: oklch(0.22 0.012 250);
+  --color-ink-soft: oklch(0.48 0.012 250);
+  --color-water: oklch(0.55 0.11 220);
+  --color-water-deep: oklch(0.42 0.10 225);
+  --color-brass: oklch(0.72 0.10 78);
+  --color-whatsapp: oklch(0.68 0.17 145);
+  --color-whatsapp-deep: oklch(0.58 0.16 147);
+  --color-hairline: oklch(0.88 0.006 250);
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-porcelain);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Browser surfaces ───────────────────────────────────────────────────
+     The parts nobody draws still carry the design: selection, the caret,
+     scrollbars, focus rings. Left alone they ship browser defaults that
+     belong to no design system. Each of these is taken from the palette. */
+
+  ::selection {
+    background-color: color-mix(in oklch, var(--color-water) 25%, transparent);
+    color: var(--color-ink);
+  }
+
+  :root {
+    caret-color: var(--color-water);
+    scrollbar-color: var(--color-hairline) transparent;
+    scrollbar-width: thin;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-hairline);
+    border: 2px solid transparent;
+    border-radius: 6px;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-ink-soft);
+  }
+
+  /* :focus-visible, so a mouse click does not paint a ring that only the
+     keyboard user actually needs. */
+  :focus-visible {
+    outline: 2px solid var(--color-water);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+  }
+
+  /* Prices and phone numbers line up in columns; proportional figures make
+     them ragged. */
+  [data-numeric],
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The 3D hero is the one authored moment on this page. Everything else is
+     state feedback, and none of it is worth overriding a stated need for
+     stillness — the model stops turning too. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
