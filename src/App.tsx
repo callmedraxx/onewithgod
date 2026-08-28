@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { Reveal } from "@/components/Reveal";
 import { FloatingWhatsApp, WhatsAppButton, WhatsAppMark } from "@/components/WhatsApp";
 import {
   BUSINESS, GENERAL_ENQUIRY, PRODUCTS, productEnquiry, whatsappLink,
@@ -98,25 +99,29 @@ function Hero() {
         <div className="mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-5 pb-16 pt-28
                         sm:justify-center sm:pb-24">
           <div className="max-w-xl">
+            {/* Line by line, because the mask wipe is worth seeing three
+                times on the one heading that carries the page. */}
             <h1 className="display text-[3.4rem] [text-shadow:0_4px_40px_rgba(0,0,0,0.75)]
                            sm:text-[5.5rem] lg:text-[7rem]">
-              The whole
-              <br />
-              bathroom.
-              <br />
-              <span className="text-gold">One supplier.</span>
+              <Reveal kind="mask" as="span" className="block">The whole</Reveal>
+              <Reveal kind="mask" as="span" className="block" delay={0.09}>bathroom.</Reveal>
+              <Reveal kind="mask" as="span" className="block text-gold" delay={0.18}>
+                One supplier.
+              </Reveal>
             </h1>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-chalk-soft
-                          [text-shadow:0_1px_14px_rgba(0,0,0,0.7)]">
+            <Reveal kind="rise" delay={0.3} as="p"
+                    className="mt-5 max-w-md text-base leading-relaxed text-chalk-soft
+                               [text-shadow:0_1px_14px_rgba(0,0,0,0.7)]">
               Toilets, basins, showers, taps and the fittings that join them.
               Distributors in Port Harcourt, supplying builders, plumbers and
               homeowners. Tell us what you need and we will price it on
               WhatsApp today.
-            </p>
+            </Reveal>
 
             {/* Pointer events are re-enabled only on the controls, so the rest
                 of the overlay lets the visitor drag the room behind it. */}
-            <div className="pointer-events-auto mt-8 flex flex-wrap items-center gap-3">
+            <Reveal kind="rise" delay={0.4}
+                    className="pointer-events-auto mt-8 flex flex-wrap items-center gap-3">
               <WhatsAppButton message={GENERAL_ENQUIRY}>
                 Message us on WhatsApp
               </WhatsAppButton>
@@ -128,7 +133,7 @@ function Hero() {
               >
                 See the range
               </a>
-            </div>
+            </Reveal>
 
             <p className="mt-5 text-xs text-chalk-soft">
               Open {BUSINESS.hours} · {BUSINESS.headOffice}
@@ -154,10 +159,11 @@ function Brands() {
           Authorised distributors of
         </p>
         <ul className="mt-4 flex flex-wrap gap-x-8 gap-y-3">
-          {BUSINESS.brands.map((b) => (
-            <li key={b} className="display text-2xl text-chalk/85">
+          {BUSINESS.brands.map((b, i) => (
+            <Reveal key={b} kind="rise" as="li" delay={i * 0.05}
+                    className="display text-2xl text-chalk/85">
               {b}
-            </li>
+            </Reveal>
           ))}
         </ul>
       </div>
@@ -169,16 +175,23 @@ function Range() {
   return (
     <section id="range" className="scroll-mt-20">
       <div className="mx-auto max-w-6xl px-5 py-16 lg:py-24">
-        <h2 className="display text-5xl sm:text-6xl lg:text-7xl">What we supply</h2>
-        <p className="mt-3 max-w-lg text-chalk-soft">
+        <Reveal kind="mask" as="h2" className="display text-5xl sm:text-6xl lg:text-7xl">What we supply</Reveal>
+        <Reveal kind="rise" as="p" delay={0.08} className="mt-3 max-w-lg text-chalk-soft">
           Everything a bathroom needs, in finishes that match. Fitting a whole
           house? Send the plan and we will price it as one order.
-        </p>
+        </Reveal>
 
         <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-hairline
                         bg-hairline sm:grid-cols-2 lg:grid-cols-3">
-          {CATEGORIES.map((c) => (
-            <div key={c.name} className="flex flex-col bg-surface p-6">
+          {CATEGORIES.map((c, i) => (
+            <Reveal
+              key={c.name}
+              kind="rise"
+              /* Capped at the third item: past that the delay stops leading
+                 the eye and starts making the last card look broken. */
+              delay={Math.min(i, 2) * 0.08}
+              className="flex flex-col bg-surface p-6"
+            >
               <h3 className="display text-2xl">{c.name}</h3>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-chalk-soft">{c.detail}</p>
               {/* Per-category, so the chat opens naming what they were
@@ -195,21 +208,24 @@ function Range() {
                 <WhatsAppMark className="h-4 w-4" />
                 Ask about {c.name.toLowerCase()}
               </a>
-            </div>
+            </Reveal>
           ))}
         </div>
 
         {PRODUCTS.length > 0 && (
           <>
-            <h2 className="mt-24 display text-5xl sm:text-6xl lg:text-7xl">In stock now</h2>
-            <p className="mt-3 max-w-lg text-chalk-soft">
+            <Reveal kind="mask" as="h2" className="mt-24 display text-5xl sm:text-6xl lg:text-7xl">In stock now</Reveal>
+            <Reveal kind="rise" as="p" delay={0.08} className="mt-3 max-w-lg text-chalk-soft">
               Photographed on our own floor at Mile 3 — not catalogue pictures
               of things we would have to order in.
-            </p>
+            </Reveal>
             <div className="mt-8 grid gap-6 sm:grid-cols-2">
-              {PRODUCTS.map((p) => (
-                <article
+              {PRODUCTS.map((p, i) => (
+                <Reveal
                   key={p.id}
+                  kind="scale"
+                  delay={i * 0.09}
+                  as="article"
                   className="group overflow-hidden rounded-2xl border border-hairline bg-surface"
                 >
                   <div className="aspect-[4/3] overflow-hidden bg-raised">
@@ -235,7 +251,7 @@ function Range() {
                       Ask about this
                     </WhatsAppButton>
                   </div>
-                </article>
+                </Reveal>
               ))}
             </div>
           </>
@@ -249,11 +265,11 @@ function Contact() {
   return (
     <section className="border-t border-hairline bg-surface/40">
       <div className="mx-auto max-w-6xl px-5 py-16 text-center lg:py-24">
-        <h2 className="display text-5xl sm:text-6xl lg:text-7xl">Ready when you are</h2>
-        <p className="mx-auto mt-3 max-w-md text-chalk-soft">
+        <Reveal kind="mask" as="h2" className="display text-5xl sm:text-6xl lg:text-7xl">Ready when you are</Reveal>
+        <Reveal kind="rise" as="p" delay={0.08} className="mx-auto mt-3 max-w-md text-chalk-soft">
           Send a photo of what you need, or of the room you are fitting. We
           will tell you what it costs and how soon it can reach you.
-        </p>
+        </Reveal>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <WhatsAppButton message={GENERAL_ENQUIRY}>Start a WhatsApp chat</WhatsAppButton>
@@ -268,14 +284,15 @@ function Contact() {
         </div>
 
         <dl className="mx-auto mt-12 grid max-w-2xl gap-5 text-left sm:grid-cols-2">
-          <div className="rounded-2xl border border-hairline bg-surface p-5">
+          <Reveal kind="scale" className="rounded-2xl border border-hairline bg-surface p-5">
             <dt className="text-xs uppercase tracking-[0.16em] text-chalk-soft">Head office</dt>
             <dd className="mt-1.5 text-sm">{BUSINESS.headOffice}</dd>
-          </div>
-          <div className="rounded-2xl border border-hairline bg-surface p-5">
+          </Reveal>
+          <Reveal kind="scale" delay={0.09}
+                  className="rounded-2xl border border-hairline bg-surface p-5">
             <dt className="text-xs uppercase tracking-[0.16em] text-chalk-soft">Showroom</dt>
             <dd className="mt-1.5 text-sm">{BUSINESS.showroom}</dd>
-          </div>
+          </Reveal>
         </dl>
       </div>
     </section>

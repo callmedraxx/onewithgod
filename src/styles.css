@@ -125,6 +125,61 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
   }
 
+  /* ── Scroll reveals ────────────────────────────────────────────────────
+     The hidden state is scoped to `.js`, which main.tsx adds at boot. That
+     ordering is the whole safety net: a browser that never runs the script
+     — blocked, failed, or still downloading on a bad connection — gets a
+     page with every word already on it, rather than a blank one waiting for
+     an observer that will never fire.
+
+     Easing is exponential ease-out. Motion that decelerates hard reads as
+     something arriving and settling; a linear or ease-in-out move reads as
+     an animation playing. */
+
+  .js [data-reveal] {
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s),
+      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s),
+      clip-path 0.9s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0s);
+    will-change: opacity, transform;
+  }
+
+  /* A heavy condensed heading wiping up out of its own baseline. The mask
+     is the reason this suits display type and nothing else: the letterforms
+     are revealed rather than moved, so the type never appears blurred or
+     half-placed mid-transition. */
+  .js [data-reveal="mask"]:not([data-shown]) {
+    opacity: 0;
+    clip-path: inset(105% 0 0 0);
+    transform: translateY(0.12em);
+  }
+
+  .js [data-reveal="mask"][data-shown] {
+    opacity: 1;
+    clip-path: inset(-25% -5% -25% -5%);
+    transform: none;
+  }
+
+  /* Body copy and blocks. Small distance on purpose: a long travel makes
+     the reader wait for text they can already half-see. */
+  .js [data-reveal="rise"]:not([data-shown]) {
+    opacity: 0;
+    transform: translateY(1.1rem);
+  }
+
+  /* Cards, where a touch of scale reads as the object settling onto the
+     page rather than sliding in from off it. */
+  .js [data-reveal="scale"]:not([data-shown]) {
+    opacity: 0;
+    transform: translateY(1.4rem) scale(0.985);
+  }
+
+  .js [data-reveal="rise"][data-shown],
+  .js [data-reveal="scale"][data-shown] {
+    opacity: 1;
+    transform: none;
+  }
+
   /* The 3D showroom is the one authored moment here. Everything else is
      state feedback, and none of it is worth overriding a stated need for
      stillness — the model stops turning and the camera stops tracking too. */
@@ -139,6 +194,14 @@
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+    }
+
+    /* Not a faster reveal — no reveal. Everything is simply present. */
+    .js [data-reveal] {
+      opacity: 1 !important;
+      transform: none !important;
+      clip-path: none !important;
+      transition: none !important;
     }
   }
 }
