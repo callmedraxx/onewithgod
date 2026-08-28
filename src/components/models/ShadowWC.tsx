@@ -146,11 +146,26 @@ function useSlab(w: number, d: number, h: number, r: number) {
   }, [w, d, h, r]);
 }
 
+/**
+ * The finishes actually stocked. The shopfront banner shows gold suites
+ * alongside the white, and matte black is what the black shower sets in the
+ * same range are paired with — so these are three things a buyer can ask
+ * for by name, not a colour picker for its own sake.
+ */
+export type Finish = "white" | "gold" | "black";
+
+export const FINISHES: { id: Finish; label: string }[] = [
+  { id: "gold", label: "Gold" },
+  { id: "white", label: "White" },
+  { id: "black", label: "Matte black" },
+];
+
 export function ShadowWC({
   /** 0 = closed, 1 = fully open. Driven by the Showroom. */
   lidOpen = 0,
+  finish = "gold",
   ...props
-}: React.ComponentProps<"group"> & { lidOpen?: number }) {
+}: React.ComponentProps<"group"> & { lidOpen?: number; finish?: Finish }) {
   // ── Dimensions ────────────────────────────────────────────────────────
   const BOWL_W = 0.88;
   const BOWL_D = 1.22;
@@ -196,30 +211,78 @@ export function ShadowWC({
   const seat = useSlab(BOWL_W + 0.02, BOWL_D - 0.24, 0.07, 0.2);
   const cover = useSlab(BOWL_W + 0.03, BOWL_D - 0.22, 0.065, 0.21);
 
-  const glaze = useMemo(
-    () =>
-      new THREE.MeshPhysicalMaterial({
-        color: "#f2f4f3",
-        roughness: 0.07,
+  /* Each finish is a different MATERIAL MODEL, not a recoloured one.
+     Glazed china is a clear coat over an opaque white body. Gold sanitary
+     ware is electroplated — a true metal, so its colour comes from the
+     reflection rather than from a diffuse term, and tinting a dielectric
+     yellow gives you mustard plastic every time. Matte black is a fired
+     satin glaze: still dielectric, but rough enough to scatter, so it holds
+     a soft sheen instead of a mirror highlight. */
+  const glaze = useMemo(() => {
+    if (finish === "gold") {
+      /* Sparkle on a metal is not a property you can dial in on the
+         material — it is reflection. A metal has no diffuse colour at all:
+         everything you see in it is the room bouncing back, tinted by the
+         metal. So the roughness goes right down, which keeps the highlights
+         tight and bright instead of smearing them into a dull sheen, and
+         envMapIntensity is pushed above 1 so it gathers more of the room
+         than a physically neutral surface would. That is what turns brass-
+         coloured plastic into polished gold. */
+      return new THREE.MeshPhysicalMaterial({
+        color: "#ffcf4a",
+        // Not lower. A near-mirror metal resolves detail fine enough to
+        // show the sweep's own ring structure as banding — the reflection
+        // magnifies normals that a diffuse surface would never reveal. This
+        // is the value where the highlights stay tight and the rings vanish.
+        roughness: 0.13,
+        metalness: 1,
+        envMapIntensity: 2.1,
+        // A hint of coat, so the very brightest specular reads as lacquer
+        // over the plate rather than raw bullion.
+        clearcoat: 0.4,
+        clearcoatRoughness: 0.04,
+      });
+    }
+    if (finish === "black") {
+      return new THREE.MeshPhysicalMaterial({
+        color: "#15161a",
+        roughness: 0.42,
         metalness: 0,
-        // Glazed china is a clear coat over an opaque body. That second
-        // specular layer is what stops it reading as painted plastic, and it
-        // is the large soft sheet visible across the reference's cistern.
-        clearcoat: 0.9,
-        clearcoatRoughness: 0.06,
-      }),
-    [],
-  );
+        clearcoat: 0.35,
+        clearcoatRoughness: 0.3,
+      });
+    }
+    return new THREE.MeshPhysicalMaterial({
+      color: "#f2f4f3",
+      roughness: 0.07,
+      metalness: 0,
+      // Glazed china is a clear coat over an opaque body. That second
+      // specular layer is what stops it reading as painted plastic, and it
+      // is the large soft sheet visible across the reference's cistern.
+      clearcoat: 0.9,
+      clearcoatRoughness: 0.06,
+    });
+  }, [finish]);
 
+  /* The seat is moulded plastic in every finish, so it follows the body's
+     colour but never its metalness — a gold suite still ships a gold-
+     coloured plastic seat, not a mirror one. */
   const plastic = useMemo(
     () =>
       new THREE.MeshPhysicalMaterial({
-        color: "#f6f7f6",
-        roughness: 0.18,
-        metalness: 0,
+        /* The seat is a broad flat plate facing straight up, so at full
+           metalness it mirrors the ceiling and reads cream rather than
+           gold — the one panel on the whole unit whose orientation works
+           against it. Pulling the metalness back and deepening the base
+           colour lets its own hue carry, so it matches the body instead of
+           looking like a white seat someone fitted to a gold pan. */
+        color: finish === "gold" ? "#d9a52e" : finish === "black" ? "#1a1b1f" : "#f6f7f6",
+        roughness: finish === "black" ? 0.45 : finish === "gold" ? 0.22 : 0.2,
+        metalness: finish === "gold" ? 0.75 : 0,
+        envMapIntensity: finish === "gold" ? 1.15 : 1,
         clearcoat: 0.5,
       }),
-    [],
+    [finish],
   );
 
   const chrome = useMemo(
@@ -242,7 +305,11 @@ export function ShadowWC({
           lid — this is what you see in the gap under a raised seat. */}
       <mesh position={[0, seatTop - 0.005, BOWL_Z + 0.05]} receiveShadow>
         <boxGeometry args={[BOWL_W - 0.26, 0.05, BOWL_D - 0.5]} />
-        <meshStandardMaterial color="#dfe3e2" roughness={0.12} />
+        <meshStandardMaterial
+          color={finish === "black" ? "#0f1013" : finish === "gold" ? "#c9a02c" : "#dfe3e2"}
+          roughness={finish === "gold" ? 0.16 : 0.14}
+          metalness={finish === "gold" ? 1 : 0}
+        />
       </mesh>
 
       <mesh

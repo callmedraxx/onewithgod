@@ -16,7 +16,8 @@
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { ContactShadows, Environment, MeshReflectorMaterial } from "@react-three/drei";
+import { ContactShadows, Environment } from "@react-three/drei";
+import { Bathroom } from "@/components/Bathroom";
 import type { Group } from "three";
 import * as THREE from "three";
 
@@ -80,17 +81,22 @@ function Rig({ children, still }: { children: React.ReactNode; still: boolean })
     if (still) {
       // One fixed three-quarter view: the angle that shows the squared
       // profile and the rake at the same time.
-      group.current.rotation.y = -0.5;
+      group.current.rotation.y = -0.42;
       group.current.position.y = baseY;
       group.current.scale.setScalar(baseScale);
       return;
     }
 
-    // A slow constant turn, plus a quarter-turn earned by scrolling. The
-    // product completes a considered rotation as the visitor reads.
-    const target = state.clock.elapsedTime * 0.18 + t * Math.PI * 0.7 - 0.5;
+    /* No constant spin any more. The pan is back-to-wall and installed
+       against the tiles now, and a fixture revolving freely inside its own
+       bathroom destroys the one thing the room was added to establish. What
+       is left is a slow drift the visitor drives: scrolling turns it about
+       thirty degrees, enough to read the profile and the front, and it
+       breathes very slightly so the frame is never completely dead. */
+    const idle = Math.sin(state.clock.elapsedTime * 0.22) * 0.035;
+    const target = -0.42 + t * 0.55 + idle;
     group.current.rotation.y = THREE.MathUtils.damp(
-      group.current.rotation.y, target, 6, delta,
+      group.current.rotation.y, target, 5, delta,
     );
 
     // Parallax from the cursor, deliberately small. Enough that the object
@@ -144,59 +150,48 @@ export function Stage({
         // above the hinge, and that headroom has to be in frame.
         onCreated={({ camera }) => camera.lookAt(0, -0.05, 0)}
       >
-        <color attach="background" args={["#141312"]} />
-        {/* Depth cue rather than decoration: the far wall falls away, which
-            is what stops a dark background reading as a flat black rectangle. */}
-        <fog attach="fog" args={["#141312", 6, 14]} />
+        <color attach="background" args={["#151413"]} />
+        {/* Holds the far end of the room back so the walls read as receding
+            rather than as a flat panel behind the product. */}
+        <fog attach="fog" args={["#151413", 6, 17]} />
 
-        <ambientLight intensity={0.35} />
+        {/* The room supplies most of the light now — a window off frame to
+            the left and a warm bounce from the right. What is left here is
+            the fill that keeps the shadow side of white ceramic from going
+            dead, and one key with a shadow so the pan is planted on the
+            tiles rather than hovering over them. */}
+        <ambientLight intensity={0.3} />
         <spotLight
-          position={[4, 6.5, 3.5]}
-          angle={0.5}
-          penumbra={0.85}
-          intensity={140}
+          position={[-2.6, 5.4, 3.2]}
+          angle={0.62}
+          penumbra={0.9}
+          intensity={95}
           castShadow
           shadow-mapSize={[1024, 1024]}
+          shadow-bias={-0.0004}
         />
-        <directionalLight position={[-5, 2.5, -2]} intensity={0.5} color="#9fc4e0" />
-        {/* Rim, from behind and above — on a dark ground this is the light
-            doing the most work, because it is what separates white ceramic
-            from the room. */}
-        <directionalLight position={[0, 3.5, -6]} intensity={1.6} />
+        {/* Rim from behind: white ceramic against a light wall needs its
+            silhouette drawn, or the two merge at the edges. */}
+        <directionalLight position={[0.5, 3.2, -4]} intensity={0.9} />
 
         <Suspense fallback={null}>
+          <Bathroom />
           <Rig still={still}>{children}</Rig>
 
-          {/* Polished floor. Sanitary showrooms are tiled and wet-look, so
-              the reflection is what the room actually looks like rather than
-              an effect bolted on. Resolution kept modest — it renders the
-              scene a second time every frame. */}
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.001, 0]} receiveShadow>
-            <planeGeometry args={[40, 40]} />
-            <MeshReflectorMaterial
-              blur={[320, 90]}
-              resolution={512}
-              mixBlur={1}
-              mixStrength={22}
-              depthScale={1.1}
-              minDepthThreshold={0.4}
-              maxDepthThreshold={1.35}
-              roughness={0.85}
-              color="#141312"
-              metalness={0.45}
-              mirror={0}
-            />
-          </mesh>
-
+          {/* Tightened onto the base: the pan meets the tiles over a small
+              footprint now that it stands on a plinth, and a wide soft blob
+              would read as a puddle. */}
           <ContactShadows
-            position={[0, -0.999, 0]}
-            opacity={0.55}
-            scale={9}
-            blur={2.4}
-            far={2.6}
+            position={[0, -0.995, 0]}
+            opacity={0.62}
+            scale={5.5}
+            blur={2}
+            far={2.2}
             resolution={512}
           />
-          <Environment preset="warehouse" />
+          {/* Apartment rather than warehouse: the reflections in glaze and
+              chrome should be a room with windows, not a steel shed. */}
+          <Environment preset="apartment" />
         </Suspense>
       </Canvas>
     </div>
