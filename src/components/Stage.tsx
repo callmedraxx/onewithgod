@@ -20,28 +20,23 @@ import { ContactShadows, Environment } from "@react-three/drei";
 import type { Group } from "three";
 import * as THREE from "three";
 
-/** Page scroll as 0→1 across the first viewport, read once per frame. */
-function useScrollProgress() {
-  const ref = useRef(0);
-  useEffect(() => {
-    const read = () => {
-      const h = window.innerHeight || 1;
-      ref.current = Math.min(Math.max(window.scrollY / h, 0), 1);
-    };
-    read();
-    window.addEventListener("scroll", read, { passive: true });
-    window.addEventListener("resize", read);
-    return () => {
-      window.removeEventListener("scroll", read);
-      window.removeEventListener("resize", read);
-    };
-  }, []);
-  return ref;
+/**
+ * Page scroll as 0→1 across the first viewport.
+ *
+ * Read inside the render loop rather than from a scroll listener. The
+ * listener version fired far more often than the sixty times a second
+ * anything could be drawn with the result, and on a phone that means a
+ * touch-move handler competing with the frame it is trying to feed.
+ * Sampling once per frame is strictly less work and always current, because
+ * the only consumer of this value is the frame itself.
+ */
+function scrollProgress(): number {
+  if (typeof window === "undefined") return 0;
+  return Math.min(Math.max(window.scrollY / (window.innerHeight || 1), 0), 1);
 }
 
 function Rig({ children, still }: { children: React.ReactNode; still: boolean }) {
   const group = useRef<Group>(null);
-  const scroll = useScrollProgress();
   const pointer = useRef({ x: 0, y: 0 });
   const { viewport } = useThree();
 
@@ -71,7 +66,7 @@ function Rig({ children, still }: { children: React.ReactNode; still: boolean })
 
   useFrame((state, delta) => {
     if (!group.current) return;
-    const t = scroll.current;
+    const t = scrollProgress();
 
     group.current.position.x = THREE.MathUtils.damp(
       group.current.position.x, offsetX, 5, delta,

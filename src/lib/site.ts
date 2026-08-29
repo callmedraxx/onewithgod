@@ -78,7 +78,7 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: "shadow-showroom",
-    name: "SHADOW WC & basin — in stock",
+    name: "SHADOW WC and basin, in stock",
     blurb:
       "Photographed on the showroom floor at Mile 3. Ready to collect or be delivered.",
     image: "/products/shadow-showroom.jpg",

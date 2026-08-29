@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Reveal } from "@/components/Reveal";
+import { ShowerFilm } from "@/components/ShowerFilm";
 import { FloatingWhatsApp, WhatsAppButton, WhatsAppMark } from "@/components/WhatsApp";
 import {
   BUSINESS, GENERAL_ENQUIRY, PRODUCTS, productEnquiry, whatsappLink,
@@ -25,7 +26,7 @@ const CATEGORIES = [
   },
   {
     name: "Showers & taps",
-    detail: "Rainfall sets, mixers and faucets — chrome and black finishes that survive hard water.",
+    detail: "Rainfall sets, mixers and faucets in chrome and black finishes that survive hard water.",
   },
   {
     name: "Baths & jacuzzis",
@@ -137,10 +138,8 @@ function Hero() {
             <Reveal kind="blur" delay={0.3} as="p"
                     className="mt-5 max-w-md text-base leading-relaxed text-chalk-soft
                                [text-shadow:0_1px_14px_rgba(0,0,0,0.7)]">
-              Toilets, basins, showers, taps and the fittings that join them.
-              Distributors in Port Harcourt, supplying builders, plumbers and
-              homeowners. Tell us what you need and we will price it on
-              WhatsApp today.
+              Toilets, basins, showers and taps, supplied across Port Harcourt.
+              Tell us what you need and we will price it today.
             </Reveal>
 
             {/* Pointer events are re-enabled only on the controls, so the rest
@@ -160,14 +159,11 @@ function Hero() {
               </a>
             </Reveal>
 
-            <p className="mt-5 text-xs text-chalk-soft">
-              Open {BUSINESS.hours} · {BUSINESS.headOffice}
-            </p>
             {/* Hidden on phones: the finish pills occupy that corner there,
                 and the two were printing over each other. */}
             <p className="mt-8 hidden text-[10px] uppercase tracking-[0.28em]
                           text-chalk-soft/50 sm:block">
-              Scroll to turn · tap the seat to open
+              Tap the seat to open
             </p>
           </div>
         </div>
@@ -247,7 +243,7 @@ function Range() {
           <>
             <Reveal kind="mask" as="h2" className="mt-24 display text-5xl sm:text-6xl lg:text-7xl">In stock now</Reveal>
             <Reveal kind="fade" as="p" delay={0.12} className="mt-3 max-w-lg text-chalk-soft">
-              Photographed on our own floor at Mile 3 — not catalogue pictures
+              Photographed on our own floor at Mile 3. Not catalogue pictures
               of things we would have to order in.
             </Reveal>
             <div className="mt-8 grid gap-6 sm:grid-cols-2">
@@ -361,6 +357,7 @@ export default function App() {
         <div className="relative z-10 bg-void">
           <Brands />
           <Range />
+          <ShowerFilm />
           <Contact />
           <Footer />
         </div>
