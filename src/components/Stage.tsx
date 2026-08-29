@@ -45,14 +45,25 @@ function Rig({ children, still }: { children: React.ReactNode; still: boolean })
      canvas — cropping would push it out of frame instead of moving it. On a
      narrow screen there is no room for two columns, so it centres and the
      copy sits beneath it. */
-  const wide = viewport.aspect > 1.05;
-  const offsetX = wide ? Math.min(viewport.width * 0.13, 1.05) : 0;
-  /* On a phone there is one column, so the product takes the upper half and
-     the copy takes the lower. Without this it sat dead centre and the body
-     text ran straight across bright white ceramic — unreadable at any
-     text-shadow. */
-  const baseY = wide ? 0 : 0.58;
-  const baseScale = wide ? 1 : 0.46;
+  /* Fit the model to whatever box it has been given.
+
+     These used to be hero numbers: pushed to one side and shrunk to under
+     half size so a column of copy could sit beside it. This is its own
+     section now, sharing the frame with nothing, and those constants left it
+     a postage stamp in the middle of a tall panel on a phone.
+
+     Nothing is hard-coded any more. r3f reports the viewport in world units
+     at the focal plane and the model's extents are known, so the scale is
+     whichever of the two constraints bites first: height in a tall panel,
+     width in a wide one. It fills its container at sizes never tested. */
+  const MODEL_H = 1.95; // floor to the top of a raised lid
+  const MODEL_W = 1.35; // the deepest silhouette, seen side-on
+  const offsetX = 0;
+  const baseY = 0;
+  const baseScale = Math.min(
+    (viewport.height * 0.86) / MODEL_H,
+    (viewport.width * 0.78) / MODEL_W,
+  );
 
   useEffect(() => {
     if (still) return;
@@ -98,13 +109,14 @@ function Rig({ children, still }: { children: React.ReactNode; still: boolean })
       group.current.rotation.x, pointer.current.y * 0.05, 4, delta,
     );
 
-    // The product settles lower and further back as the page moves on, so
-    // the copy below has the visual weight once it arrives.
+    /* No scroll-driven drop or shrink. That was hero parallax, making room
+       for copy arriving beneath it; in a boxed viewer it just shrinks the
+       one thing the visitor came to look at. */
     group.current.position.y = THREE.MathUtils.damp(
-      group.current.position.y, baseY - t * 0.5, 4, delta,
+      group.current.position.y, baseY, 4, delta,
     );
     group.current.scale.setScalar(
-      THREE.MathUtils.damp(group.current.scale.x, baseScale * (1 - t * 0.14), 4, delta),
+      THREE.MathUtils.damp(group.current.scale.x, baseScale, 4, delta),
     );
   });
 
