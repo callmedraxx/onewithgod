@@ -41,11 +41,17 @@ type Conn = { saveData?: boolean; effectiveType?: string };
 function pickSource(): string {
   if (typeof window === "undefined") return "/shower-lite.mp4";
   const c = (navigator as Navigator & { connection?: Conn }).connection;
+  // Data Saver and slow links get the small file. This is the only case
+  // where resolution is sacrificed, and it is the right one: on 2G the
+  // choice is a soft picture or no picture.
   if (c?.saveData) return "/shower-lite.mp4";
   if (c?.effectiveType && /(^|-)2g$|3g/.test(c.effectiveType)) return "/shower-lite.mp4";
-  // A narrow viewport is a phone, and a phone cannot resolve the extra
-  // detail anyway — the panel is at most a few hundred CSS pixels wide.
-  if (window.innerWidth < 1024) return "/shower-lite.mp4";
+
+  /* Phones get FULL resolution at a lower bitrate, not a smaller picture. A
+     390px box on a 3x screen is 1170 real pixels, so a 356-wide file is
+     upscaled hard and looks soft; the native 464 is what the panel can
+     actually resolve. Bitrate is the axis to give up, not resolution. */
+  if (window.innerWidth < 1024) return "/shower-std.mp4";
   return "/shower-hd.mp4";
 }
 
