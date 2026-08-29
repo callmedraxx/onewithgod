@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { Reveal } from "@/components/Reveal";
-import { ShowerFilm } from "@/components/ShowerFilm";
+import { HeroFilm } from "@/components/HeroFilm";
 import { FloatingWhatsApp, WhatsAppButton, WhatsAppMark } from "@/components/WhatsApp";
 import {
   BUSINESS, GENERAL_ENQUIRY, PRODUCTS, productEnquiry, whatsappLink,
@@ -99,15 +99,7 @@ function Hero() {
           }}
         />
 
-        <Suspense
-          fallback={
-            /* Not a spinner. The room's own colour, so nothing flashes and
-               the layout never jumps when the canvas takes over. */
-            <div className="h-full w-full bg-void" />
-          }
-        >
-          <Showroom />
-        </Suspense>
+        <HeroFilm />
         {/* The floor of the 3D room fades into the page, so the canvas has no
             visible bottom edge and the section below reads as the same space
             rather than a different one. */}
@@ -289,6 +281,39 @@ function Range() {
   );
 }
 
+/**
+ * The 3D suite, moved out of the hero.
+ *
+ * The film opens the page now, but the model is still the only way a buyer
+ * turns a pan around, sees it in gold, and watches the seat close by itself.
+ * It belongs immediately after the range, where "Toilets & WCs" was just
+ * named.
+ */
+function Suite() {
+  return (
+    <section className="border-t border-hairline">
+      <div className="mx-auto max-w-6xl px-5 py-16 lg:py-24">
+        <Reveal kind="mask" as="h2" className="display text-5xl sm:text-6xl lg:text-7xl">
+          Turn it around
+        </Reveal>
+        <Reveal kind="fade" as="p" delay={0.12} className="mt-4 max-w-md text-chalk-soft">
+          The SHADOW suite in gold, white or matte black. Drag to turn it, and
+          tap the seat to watch the soft close hinge do its work.
+        </Reveal>
+
+        <Reveal kind="scale" speed="slow" className="mt-10">
+          <div className="relative h-[62vh] max-h-[38rem] overflow-hidden rounded-3xl
+                          border border-hairline bg-surface/40">
+            <Suspense fallback={<div className="h-full w-full bg-surface/40" />}>
+              <Showroom />
+            </Suspense>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
 function Contact() {
   return (
     <section className="border-t border-hairline bg-surface/40">
@@ -357,7 +382,7 @@ export default function App() {
         <div className="relative z-10 bg-void">
           <Brands />
           <Range />
-          <ShowerFilm />
+          <Suite />
           <Contact />
           <Footer />
         </div>
