@@ -151,12 +151,6 @@ function Hero() {
               </a>
             </Reveal>
 
-            {/* Hidden on phones: the finish pills occupy that corner there,
-                and the two were printing over each other. */}
-            <p className="mt-8 hidden text-[10px] uppercase tracking-[0.28em]
-                          text-chalk-soft/50 sm:block">
-              Tap the seat to open
-            </p>
           </div>
         </div>
       </div>
